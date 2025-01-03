@@ -4,7 +4,7 @@ include_once '../configuraciones/bd.php';
 $conexionBD=BD::crearInstancia();
 
 
-$horarioID=isset($_POST['horarioID'])?$_POST['horarioID']:'';
+$horarioid=isset($_POST['horarioid'])?$_POST['horarioid']:'';
 $horario=isset($_POST['horario'])?$_POST['horario']:'';
 $accion=isset($_POST['accion'])?$_POST['accion']:'';
 
@@ -13,33 +13,31 @@ $accion=isset($_POST['accion'])?$_POST['accion']:'';
 if($accion!=''){
     switch($accion){
         case 'agregar':
-            $sql="INSERT INTO horarios (horarioID, horario) VALUES (NULL,:horario)";
+            $sql="INSERT INTO horarios (horarioid, horario) VALUES (NULL,:horario)";
             $consulta=$conexionBD->prepare($sql);
             $consulta->bindParam(':horario',$horario);
             $consulta->execute();
             break;
 
         case 'editar':
-            $sql="UPDATE horarios SET horario=:horario WHERE horarioID=:horarioID";
+            $sql="UPDATE horarios SET horario=:horario WHERE horarioid=:horarioid";
             $consulta=$conexionBD->prepare($sql);
-            $consulta->bindParam(':horarioID',$horarioID);
+            $consulta->bindParam(':horarioid',$horarioid);
             $consulta->bindParam(':horario',$horario);
             $consulta->execute();
-            echo $sql;
         break;
 
         case 'borrar':
-            $sql="DELETE FROM horarios WHERE horarioID=:horarioID";
+            $sql="DELETE FROM horarios WHERE horarioid=:horarioid";
             $consulta=$conexionBD->prepare($sql);
-            $consulta->bindParam(':horarioID',$horarioID);
+            $consulta->bindParam(':horarioid',$horarioid);
             $consulta->execute();
-            echo $sql;
         break;
 
         case 'Seleccionar':
-            $sql="SELECT * FROM horarios WHERE horarioID=:horarioID";
+            $sql="SELECT * FROM horarios WHERE horarioid=:horarioid";
             $consulta=$conexionBD->prepare($sql);
-            $consulta->bindParam(':horarioID',$horarioID);
+            $consulta->bindParam(':horarioid',$horarioid);
             $consulta->execute();
             $horario=$consulta->fetch(PDO::FETCH_ASSOC);
             $horario=$horario['horario'];
@@ -50,7 +48,7 @@ if($accion!=''){
 }
 
 
-$consulta=$conexionBD->prepare("SELECT * FROM horarios ");
+$consulta=$conexionBD->prepare("SELECT * FROM horarios");
 $consulta->execute();
 $listaHorarios=$consulta->fetchAll();
 
