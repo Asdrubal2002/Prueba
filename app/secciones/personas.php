@@ -2,7 +2,7 @@
 include_once '../configuraciones/bd.php';
 $conexionBD=BD::crearInstancia();
 
-$personaID = isset($_POST['personaID']) ? $_POST['personaID'] : '';
+$personaid = isset($_POST['personaid']) ? $_POST['personaid'] : '';
 $dni=isset($_POST['dni'])?$_POST['dni']:'';
 $nombre=isset($_POST['nombre'])?$_POST['nombre']:'';
 $fecha_nacimiento=isset($_POST['fecha_nacimiento'])?$_POST['fecha_nacimiento']:'';
@@ -12,7 +12,7 @@ $accion=isset($_POST['accion'])?$_POST['accion']:'';
 
 $horarios=isset($_POST['horarios'])?$_POST['horarios']:'';   
 
-//print_r($_POST['accion']);
+//print_r($_POST);
 
 if($accion!=''){
 
@@ -23,15 +23,15 @@ if($accion!=''){
             $fecha_nacimiento = $_POST['fecha_nacimiento'] ?? null;
             $direccion = $_POST['direccion'] ?? null;
             $telefono = $_POST['telefono'] ?? null;
-            $horarioID = $_POST['horarioID'] ?? null;
+            $horarioid = $_POST['horarioid'] ?? null;
         
-            if (!$dni || !$nombre || !$fecha_nacimiento || !$direccion || !$telefono || !$horarioID) {
+            if (!$dni || !$nombre || !$fecha_nacimiento || !$direccion || !$telefono || !$horarioid) {
                 die("Error: Todos los campos son obligatorios.");
             }
         
             try {
-                $sql = "INSERT INTO tbl_personas (personaID, dni, nombre, fecha_nacimiento, direccion, telefono) 
-                        VALUES (NULL, :dni, :nombre, :fecha_nacimiento, :direccion, :telefono)";
+                $sql = "INSERT INTO tbl_personas (dni, nombre, fecha_nacimiento, direccion, telefono) 
+                        VALUES (:dni, :nombre, :fecha_nacimiento, :direccion, :telefono)";
                 $consulta = $conexionBD->prepare($sql);
                 $consulta->bindParam(':dni', $dni);
                 $consulta->bindParam(':nombre', $nombre);
@@ -46,10 +46,10 @@ if($accion!=''){
         
                 $idPersona = $conexionBD->lastInsertId();
         
-                $sql = "INSERT INTO horario_persona (id, personaID, horarioID) VALUES (NULL, :personaID, :horarioID)";
+                $sql = "INSERT INTO horario_persona (personaid, horarioid) VALUES (:personaid, :horarioid)";
                 $consulta = $conexionBD->prepare($sql);
-                $consulta->bindParam(':personaID', $idPersona);
-                $consulta->bindParam(':horarioID', $horarioID);
+                $consulta->bindParam(':personaid', $idPersona);
+                $consulta->bindParam(':horarioid', $horarioid);
         
                 if (!$consulta->execute()) {
                     print_r($consulta->errorInfo());
@@ -65,12 +65,12 @@ if($accion!=''){
 
             case 'Seleccionar':
                 
-                $sql = "SELECT * FROM tbl_personas WHERE personaID=:personaID";
+                $sql = "SELECT * FROM tbl_personas WHERE personaid=:personaid";
                 $consulta = $conexionBD->prepare($sql);
-                $consulta->bindParam(':personaID', $personaID);
+                $consulta->bindParam(':personaid', $personaid);
                 $consulta->execute();
                 $persona = $consulta->fetch(PDO::FETCH_ASSOC);
-                $personaID = $persona['personaID'];
+                $personaid = $persona['personaid'];
                 
                 $nombre = $persona['nombre'];
                 $dni = $persona['dni'];
@@ -79,49 +79,45 @@ if($accion!=''){
                 $telefono= $persona['telefono'];
                 $direccion= $persona['direccion'];
 
-                $sql = "SELECT * FROM horario_persona WHERE personaID = :personaID";
+                $sql = "SELECT * FROM horario_persona WHERE personaid = :personaid";
                 $consulta = $conexionBD->prepare($sql); 
-                $consulta->bindParam(':personaID', $personaID, PDO::PARAM_INT); 
+                $consulta->bindParam(':personaid', $personaid, PDO::PARAM_INT); 
                 $consulta->execute(); 
                 $horariosPersona = $consulta->fetchAll(PDO::FETCH_ASSOC); 
                 
                 foreach ($horariosPersona as $horario) {
-                    $horarioEscogido=$horario['horarioID'];
+                    $horarioEscogido=$horario['horarioid'];
                 }
 
             break;
             
             case 'borrar':
-                $sql="DELETE FROM tbl_personas WHERE personaID=:personaID";
+                $sql="DELETE FROM tbl_personas WHERE personaid=:personaid";
                 $consulta=$conexionBD->prepare($sql);
-                $consulta->bindParam(':personaID',$personaID);
+                $consulta->bindParam(':personaid',$personaid);
                 $consulta->execute();
             break;
 
             case 'editar':
-                // Verificar si personaID está presente en $_POST
-                if (isset($_POST['personaID'])) {
-                    $personaID = $_POST['personaID'];
+                if (isset($_POST['personaid'])) {
+                    $personaid = $_POST['personaid'];
             
-                    // Consultar la persona a editar
-                    $sql = "SELECT * FROM tbl_personas WHERE personaID = :personaID";
+                    $sql = "SELECT * FROM tbl_personas WHERE personaid = :personaid";
                     $consulta = $conexionBD->prepare($sql);
-                    $consulta->bindParam(':personaID', $personaID);
+                    $consulta->bindParam(':personaid', $personaid);
                     $consulta->execute();
                     $persona = $consulta->fetch(PDO::FETCH_ASSOC);
             
                     if ($persona) {
-                        // Obtener los valores a actualizar (de los campos del formulario)
                         $dni = isset($_POST['dni']) ? $_POST['dni'] : '';
                         $nombre = isset($_POST['nombre']) ? $_POST['nombre'] : '';
                         $fecha_nacimiento = isset($_POST['fecha_nacimiento']) ? $_POST['fecha_nacimiento'] : '';
                         $direccion = isset($_POST['direccion']) ? $_POST['direccion'] : '';
                         $telefono = isset($_POST['telefono']) ? $_POST['telefono'] : '';
             
-                        // Ejecutar la actualización
                         $sql = "UPDATE tbl_personas 
                                 SET dni = :dni, nombre = :nombre, fecha_nacimiento = :fecha_nacimiento, direccion = :direccion, telefono = :telefono
-                                WHERE personaID = :personaID";
+                                WHERE personaid = :personaid";
             
                         $consulta = $conexionBD->prepare($sql);
                         $consulta->bindParam(':dni', $dni);
@@ -129,7 +125,7 @@ if($accion!=''){
                         $consulta->bindParam(':fecha_nacimiento', $fecha_nacimiento);
                         $consulta->bindParam(':direccion', $direccion);
                         $consulta->bindParam(':telefono', $telefono);
-                        $consulta->bindParam(':personaID', $personaID);
+                        $consulta->bindParam(':personaid', $personaid);
                         $consulta->execute();
             
                         echo "Persona actualizada correctamente.";
@@ -151,10 +147,10 @@ $personas=$listaPersonas->fetchAll();
 foreach($personas as $clave => $persona){
     $sql = "SELECT h.* 
             FROM horarios h 
-            INNER JOIN horario_persona hp ON h.horarioID = hp.horarioID 
-            WHERE hp.personaID = :personaID";
+            INNER JOIN horario_persona hp ON h.horarioid = hp.horarioid 
+            WHERE hp.personaid = :personaid";
     $consulta=$conexionBD->prepare($sql);
-    $consulta->bindParam(':personaID',$persona['personaID']);
+    $consulta->bindParam(':personaid',$persona['personaid']);
     $consulta->execute();
     $horariosPersona=$consulta->fetchAll();
     $personas[$clave]['horarios']=$horariosPersona;
