@@ -10,7 +10,7 @@
 
                 <div class="mb-3">
                     <label for="" class="form-label">ID</label>
-                    <input type="text" class="form-control" name="horarioID" id="horarioID" value="<?php echo $horarioID;?>" aria-describedby="helpId"
+                    <input type="text" class="form-control" name="horarioid" id="horarioid" value="<?php echo $horarioid;?>" aria-describedby="helpId"
                         placeholder="" />
                 </div>
 
@@ -54,11 +54,11 @@
         <tbody>
             <?php foreach($listaHorarios as $horario){?>
             <tr class="">
-                <td> <?php echo $horario['horarioID']; ?> </td>
+                <td> <?php echo $horario['horarioid']; ?> </td>
                 <td><?php echo $horario['horario']; ?> </td>
                 <td>
                     <form action="" method="post">
-                        <input type="hidden" name="horarioID" id="horarioID" value="<?php echo $horario['horarioID']; ?>">
+                        <input type="hidden" name="horarioid" id="horarioid" value="<?php echo $horario['horarioid']; ?>">
                         <input type="submit" value="Seleccionar" name="accion" class="btn btn-info">
                     </form>
 
